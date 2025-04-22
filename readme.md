@@ -15,10 +15,9 @@
 - [Milestone]()
 - [Executive Summary]()
 - [Security Statement]()
-- [Standards and Practices])
+- [Standards and Practices]()
 - [Timeline]()
 ### 🖌️ Design
-- [Design Problem Frame]()
 - [Level 0 Design Diagram]()
 - [Level 1 Design Diagram]()
 - [UML Diagram]()
@@ -27,7 +26,7 @@
   
 
 ### 📖Documentation
-- [Prototype and Documentation](Documentation/Prototype_and_Documentation.md)
+- [Prototype and Documentation]()
 - [Sprint Reports for Iteration 1]()
 - [Sprint Report for Iteration 2]()
 - [Sprint Reports for Iteration 3]()
