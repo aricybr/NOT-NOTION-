@@ -1,5 +1,5 @@
 # NOT-NOTION - Task Titans
-![image]( )
+![image]( file:///C:/Users/jwars/Downloads/cover-page-beautiful.html)
 
 
 **Not-Notion is a task management application built using Python. It features a simple to-do/task tracker with core functionality including adding tasks, setting priorities, marking completion.**
