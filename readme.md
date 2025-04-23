@@ -34,6 +34,7 @@
 -  [Sprint Report for Iteration 5](Documentation/Report_Iteration5.md)
 -  [Sprint Report for Iteration 6](Documentation/Report_Iteration6.md)
 -  [Sprint Report for Iteration 7](Documentation/Report_Iteration7.md)
+-  [NOTES](Documentation/Notes.md)
 
 ### 🩺 Testing
 - [Testing Report]()
