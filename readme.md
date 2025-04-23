@@ -1,6 +1,6 @@
 # NOT-NOTION - Task Titans
  
-
+![image](https://github.com/aricybr/NOT-NOTION-/blob/main/Documentation/Screenshot%202025-04-22%20164859.png)
 
 **Not-Notion is a task management application built using Python. It features a simple to-do/task tracker with core functionality including adding tasks, setting priorities, marking completion.**
 
