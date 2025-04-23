@@ -1,4 +1,4 @@
-# Not-Notion: Task Management Application
+# WK 1 Not-Notion: Task Management Application
 **Core Concept**
 
 - Simple, intuitive task management application built with Python and Tkinter
@@ -11,14 +11,22 @@
 - Task completion marking
 - Basic reporting/statistics
 - GUI-first approach with Tkinter interface
+- Secure data storage and user authentication
 
 **Development Focus**
 
 - User-friendly interface that's easy to navigate
   Reliable data persistence
 - Smooth performance
+- User story development
 - Clean, readable code structure
-- Minimal dependencies for easy installation
+
+**Testing & Refinement**
+
+- Security testing and vulnerability assessment
+- User acceptance testing
+- Bug fixing 
+- Documentation completion
 
 # SPRINT GOALS
 **SPRINT 1**
