@@ -33,3 +33,26 @@
 **SPRINT 3**
 
 - Get a basic GUI setup
+
+  # User Stories
+
+**Authentication**
+
+- As a user, I want to securely log in to the application so that my tasks remain private
+- As an administrator, I want password requirements enforced so that user accounts remain secure
+
+**Task Management**
+
+- As a user, I want to create new tasks with titles and descriptions so I can track what needs to be done
+- As a user, I want to set priorities on tasks so I can focus on what's important
+- As a user, I want to mark tasks as complete so I can track my progress
+- As a user, I want to delete tasks that are no longer relevant
+
+**Data Management**
+
+- As a user, I want my data to be securely stored so unauthorized users cannot access it
+- As a user, I want my task data to persist between sessions so I don't lose my task list
+
+**Reporting**
+- As a user, I want to see basic statistics about my tasks so I can track my productivity
+- As a user, I want to filter tasks by status or priority so I can focus on specific subsets
