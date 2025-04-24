@@ -17,6 +17,7 @@
 - [Security Statement](Documentation/Security_Statement.md)
 - [Timeline](Documentation/Timeline.md)
 - [Standards and Practices](Documentation/Standards_and_Practices.md)
+- [Structure Not-Notion!](https://github.com/users/aricybr/projects/1?pane=issue&itemId=107869245&issue=aricybr%7CNOT-NOTION-%7C29)
 ### 🖌️ Design
 -  [Problem Frame]()
 -  [Level 0 Design Diagram]()
