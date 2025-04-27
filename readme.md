@@ -20,7 +20,7 @@
 - [Structure Not-Notion!](https://github.com/users/aricybr/projects/1?pane=issue&itemId=107869245&issue=aricybr%7CNOT-NOTION-%7C29)
 ### 🖌️ Design
 -  [Problem Frame]()
--  [Level 0 Design Diagram]()
+-  [Level 0 Design Diagram](https://github.com/aricybr/NOT-NOTION-/blob/main/Design/not-notion_L0.jpg)
 -  [Level 1 Design Diagram]()
 -  [UML Diagram](https://github.com/aricybr/NOT-NOTION-/blob/main/Design/not-notion_uml.jpg)
 
