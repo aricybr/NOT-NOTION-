@@ -22,7 +22,7 @@
 -  [Problem Frame]()
 -  [Level 0 Design Diagram]()
 -  [Level 1 Design Diagram]()
--  [UML Diagram]()
+-  [UML Diagram](https://github.com/aricybr/NOT-NOTION-/blob/main/Design/not-notion_uml.jpg)
 
 ### 💻Code 
 - [main_window.py](https://github.com/aricybr/NOT-NOTION-/blob/main/Code/Sprint3/main_window.py)
