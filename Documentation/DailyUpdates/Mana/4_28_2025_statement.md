@@ -1,1 +1,2 @@
 - Ensure that the grid expands and the font size changes when the screen size is changed.
+- Add all task display and create task button.
