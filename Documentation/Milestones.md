@@ -42,6 +42,28 @@
 
 - Get a basic GUI setup
 
+**SPRINT 4 – DFD & UML Revisions**
+
+- Fix the DFD (Evan):
+- Revise the current DFD into a proper Level 0 format:
+- One main process (project name).
+- All external entities clearly shown and connected.
+
+**Clean Up UML Diagrams:**
+
+- Ensure arrows only show inheritance.
+- Use class attributes for inclusion/relationships instead of arrows.
+- Clearly define class names, attributes, and methods.
+
+**SPRINT 5 – Code and Design Sync**
+
+- Sync codebase with the updated UML design.
+- Ensure each class in UML exists in code with accurate structure and relationships.
+
+**SPRINT 6 – Code Testing**
+
+- Test the code thoroughly to verify functionality and alignment with design documents.
+
   # User Stories
 
 **Authentication**
