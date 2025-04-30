@@ -1,4 +1,4 @@
-# WK 1 Not-Notion: Task Management Application
+#  Not-Notion: Task Management Application
 **Core Concept**
 
 - Simple, intuitive task management application built with Python and Tkinter
