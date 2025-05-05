@@ -25,7 +25,7 @@
 -  [UML Diagram](https://github.com/aricybr/NOT-NOTION-/blob/main/Design/not-notion_uml.jpg)
 
 ### 💻Code 
-- [latest_main.py](https://github.com/aricybr/NOT-NOTION-/blob/main/Code/latest%20version/main.py)
+- [latest_main.py](https://github.com/aricybr/NOT-NOTION-/blob/main/Code/latest%20version/latest_main.py)
 
   
 
