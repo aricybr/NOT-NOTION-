@@ -40,7 +40,7 @@
 -  [NOTES](Documentation/Notes.md)
 
 ### 🩺 Testing
-- [Testing Report]()
+- [User Testing Report](https://github.com/aricybr/NOT-NOTION-/issues/35)
   
 ### 🔧 Maintainance
 - [Maintainance](Documentation/Maintenance_Report.md)
