@@ -20,12 +20,7 @@ class Node:
         self.status = status
         self.due_date = date or datetime.date.today().isoformat()
 
-    def mark_complete(self):
-        self.status = True
-
-    def change_priority(self, new_priority: str):
-        self.priority = new_priority
-
+    
     def to_dict(self) -> dict:
         return {
             "name": self.name,
