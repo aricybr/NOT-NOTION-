@@ -1,0 +1,2 @@
+- Create user.py and there documentation
+- Code implementation tailored to UML
