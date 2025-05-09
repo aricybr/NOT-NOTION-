@@ -19,7 +19,7 @@ def test_node():
     assert test_node.description == "This is a test task", "Node description incorrectly set"
     assert test_node.priority == "Medium", "Node priority incorrectly set"
     assert test_node.status is False, "Node status should default to False"
-    assert test_node.creation_date == datetime.date.today().isoformat(), "Default date should be today"
+    assert test_node.due_date == datetime.date.today().isoformat(), "Default date should be today"
 
     # Test marking complete
     test_node.mark_complete()
