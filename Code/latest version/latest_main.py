@@ -3,7 +3,9 @@ from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
 import tkinter.font as tkFont
 import datetime
-import json
+import json, hashlib
+import sys
+from typing import List, Dict
 
 
 class Node:
@@ -11,12 +13,12 @@ class Node:
     Data model for a task, with serialization support.
     """
     def __init__(self, name: str, description: str, priority: str,
-                 status: bool = False, creation_date: str = None):
+                 status: bool = False, date: str = None):
         self.name = name
         self.description = description
         self.priority = priority
         self.status = status
-        self.creation_date = creation_date or datetime.date.today().isoformat()
+        self.due_date = date or datetime.date.today().isoformat()
 
     def mark_complete(self):
         self.status = True
@@ -30,7 +32,7 @@ class Node:
             "description": self.description,
             "priority": self.priority,
             "status": self.status,
-            "creation_date": self.creation_date
+            "date": self.due_date
         }
 
 class NodeUI:
@@ -50,30 +52,39 @@ class NodeUI:
         card.pack(fill='x', pady=4, padx=4)
 
         var = tk.BooleanVar(value=self.node.status)
-        chk = tk.Checkbutton(card, variable=var,
-                             command=lambda: self._toggle(var),
-                             bg='white', activebackground='white', borderwidth=0)
-        chk.pack(side='left')
+        chk = tk.Checkbutton(
+            card,
+            variable=var,
+            command=lambda: self._toggle(var),
+            bg='white',
+            activebackground='white',
+            borderwidth=0,
+            width=4,  # roughly 4 character-widths wide
+            height=2,  # roughly 2 lines tall
+            padx=6,  # inner padding
+            pady=6
+        )
+        chk.pack(side='left', padx=4, pady=4)
 
         info = tk.Frame(card, bg='white')
         info.pack(side='left', fill='x', expand=True, padx=6)
         nm_font = tkFont.Font(family='Segoe UI', size=12,
                               weight='bold', overstrike=self.node.status)
         tk.Label(info, text=self.node.name, font=nm_font, bg='white').pack(anchor='w')
-        tk.Label(info, text=self.node.creation_date,
+        tk.Label(info, text=self.node.due_date,
                  font=('Segoe UI',10), bg='white').pack(anchor='w')
         tk.Label(info, text=self.node.description,
                  font=('Segoe UI',10), fg='grey', bg='white').pack(anchor='w')
 
         pill = tk.Label(card, text=self.node.priority,
                         bg=colors.get(self.node.priority,'grey'), fg='white',
-                        font=('Segoe UI',9), padx=5, pady=2)
+                        font=('Segoe UI', 9), padx=5, pady=2)
         pill.pack(side='right')
 
         btns = tk.Frame(card, bg='white')
         btns.pack(side='right', padx=4)
         ttk.Button(btns, text='Edit', command=self._open_edit_dialog).pack(side='left')
-        ttk.Button(btns, text='Delete', command=self._delete).pack(side='left', padx=(5,0))
+        ttk.Button(btns, text='Delete', command=self._delete).pack(side='left', padx=(5, 0))
 
     def _open_edit_dialog(self):
         dlg = tk.Toplevel(self.parent)
@@ -81,12 +92,12 @@ class NodeUI:
         dlg.title('Edit Task')
         dlg.grid_columnconfigure(1, weight=1)
 
-        ttk.Label(dlg, text='Name:').grid(row=0, column=0, sticky='e', padx=5, pady=5)
+        ttk.Label(dlg, text='Task Name:').grid(row=0, column=0, sticky='e', padx=5, pady=5)
         name_var = tk.StringVar(value=self.node.name)
         ttk.Entry(dlg, textvariable=name_var).grid(row=0, column=1, sticky='we', padx=5)
 
-        ttk.Label(dlg, text='Date:').grid(row=1, column=0, sticky='e', padx=5, pady=5)
-        date_var = tk.StringVar(value=self.node.creation_date)
+        ttk.Label(dlg, text='Due Date:').grid(row=1, column=0, sticky='e', padx=5, pady=5)
+        date_var = tk.StringVar(value=self.node.due_date)
         DateEntry(dlg, textvariable=date_var,
                   date_pattern='yyyy-mm-dd').grid(row=1, column=1, sticky='we', padx=5)
 
@@ -105,10 +116,10 @@ class NodeUI:
         def save():
             name = name_var.get().strip()
             if not name:
-                messagebox.showwarning('Input Error','Name cannot be empty.')
+                messagebox.showwarning('Input Error','Task Name cannot be empty.')
                 return
             self.node.name = name
-            self.node.creation_date = date_var.get()
+            self.node.due_date = date_var.get()
             self.node.priority = prio_var.get()
             self.node.description = desc_txt.get('1.0','end').strip()
             self.storage.save_tasks(self.refresh.__self__.task_queue)
@@ -129,6 +140,29 @@ class NodeUI:
         self.refresh()
 
 
+class DataStorage:
+    """
+    Handles saving and loading Node lists to/from a JSON file.
+    """
+    def __init__(self, filepath: str = "tasks.json"):
+        self.filepath = filepath
+
+    def save_tasks(self, task_queue) -> None:
+        data = [node.to_dict() for node in task_queue.get_all_tasks()]
+        with open(self.filepath, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+    def load_tasks(self) -> List[Node]:
+        try:
+            with open(self.filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return [Node(**item) for item in data]
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []
+
+
+
+
 class PriorityTaskQueue:
     """
     Filters and displays tasks in a parent frame using NodeUI cards.
@@ -141,31 +175,41 @@ class PriorityTaskQueue:
         self._last_view = self.show_all
 
     def show_all(self):
-        self._display(self.task_queue.get_all_tasks(), "All Tasks")
+        # only unfinished tasks
+        nodes = [n for n in self.task_queue.get_all_tasks()]
+        self._display(nodes, "All Tasks")
         self._last_view = self.show_all
 
     def show_today(self):
         today = datetime.date.today().isoformat()
-        nodes = [n for n in self.task_queue.get_all_tasks()
-                 if n.creation_date == today]
+        nodes = [
+            n for n in self.task_queue.get_all_tasks()
+            if n.due_date == today and not n.status
+        ]
         self._display(nodes, "Today's Tasks")
         self._last_view = self.show_today
 
     def show_upcoming(self):
         today = datetime.date.today()
         end = today + datetime.timedelta(days=3)
-        nodes = [n for n in self.task_queue.get_all_tasks()
-                 if today <= datetime.date.fromisoformat(n.creation_date) <= end]
+        nodes = [
+            n for n in self.task_queue.get_all_tasks()
+            if today <= datetime.date.fromisoformat(n.due_date) <= end
+               and not n.status
+        ]
         self._display(nodes, "Upcoming Tasks")
         self._last_view = self.show_upcoming
 
     def show_high_priority(self):
-        nodes = [n for n in self.task_queue.get_all_tasks()
-                 if n.priority == 'High']
+        nodes = [
+            n for n in self.task_queue.get_all_tasks()
+            if n.priority == 'High' and not n.status
+        ]
         self._display(nodes, "High Priority Tasks")
         self._last_view = self.show_high_priority
 
     def show_completed(self):
+        # this one stays the same
         nodes = [n for n in self.task_queue.get_all_tasks() if n.status]
         self._display(nodes, "Completed Tasks")
         self._last_view = self.show_completed
@@ -179,9 +223,9 @@ class PriorityTaskQueue:
         header = tk.Frame(self.parent, bg="#F7FAFC")
         header.pack(fill="x", pady=5, padx=5)
         tk.Label(header, text=title,
-                 font=("Segoe UI",14,'bold'), bg="#F7FAFC").pack(side='left')
+                 font=("Segoe UI", 20, 'bold'), bg="#F7FAFC").pack(side='left')
         tk.Button(header, text="Add Task", bg="#3182CE", fg='white',
-                  relief='flat', command=self._open_add_dialog).pack(side='right')
+                  relief='flat', font=20, command=self._open_add_dialog).pack(side='right')
 
         # Task cards
         list_frame = tk.Frame(self.parent, bg="#F7FAFC")
@@ -209,11 +253,11 @@ class PriorityTaskQueue:
         dlg.grid_columnconfigure(1, weight=1)
 
         # Form fields
-        ttk.Label(dlg, text='Name:').grid(row=0, column=0, sticky='e', padx=5, pady=5)
+        ttk.Label(dlg, text='Task Name:').grid(row=0, column=0, sticky='e', padx=5, pady=5)
         name_var = tk.StringVar()
         ttk.Entry(dlg, textvariable=name_var).grid(row=0, column=1, sticky='we', padx=5)
 
-        ttk.Label(dlg, text='Date:').grid(row=1, column=0, sticky='e', padx=5, pady=5)
+        ttk.Label(dlg, text='Due Date:').grid(row=1, column=0, sticky='e', padx=5, pady=5)
         date_var = tk.StringVar(value=datetime.date.today().isoformat())
         DateEntry(dlg, textvariable=date_var, date_pattern='yyyy-mm-dd')\
             .grid(row=1, column=1, sticky='we', padx=5)
@@ -232,7 +276,7 @@ class PriorityTaskQueue:
         def save_new():
             name = name_var.get().strip()
             if not name:
-                messagebox.showwarning('Input Error', 'Name cannot be empty.')
+                messagebox.showwarning('Input Error', 'Task Name cannot be empty.')
                 return
             # Explicitly use Node class for creation
             new_node = Node(
@@ -248,6 +292,130 @@ class PriorityTaskQueue:
             self._refresh()
 
         ttk.Button(dlg, text='Save', command=save_new).grid(row=4, column=1, padx=5, pady=10)
+
+
+class User:
+    """
+    Data model for an application user, with simple password-hash authentication.
+    """
+    def __init__(self, username: str, password_hash: str):
+        self.username = username
+        self.password_hash = password_hash
+
+    def authenticate(self, password: str) -> bool:
+        return hashlib.sha256(password.encode()).hexdigest() == self.password_hash
+
+    def change_password(self, old: str, new: str) -> bool:
+        if self.authenticate(old):
+            self.password_hash = hashlib.sha256(new.encode()).hexdigest()
+            return True
+        return False
+
+    def to_dict(self) -> dict:
+        return {"username": self.username, "password_hash": self.password_hash}
+
+
+class UserStorage:
+    """
+    Handles saving and loading User objects to/from a JSON file.
+    """
+    def __init__(self, filepath: str = "users.json"):
+        self.filepath = filepath
+
+    def load_users(self) -> Dict[str, User]:
+        try:
+            with open(self.filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return {u["username"]: User(**u) for u in data}
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {}
+
+    def save_users(self, users: Dict[str, User]) -> None:
+        with open(self.filepath, "w", encoding="utf-8") as f:
+            json.dump([u.to_dict() for u in users.values()], f, ensure_ascii=False, indent=2)
+
+
+def prompt_login_or_register(user_storage: UserStorage) -> bool:
+
+    users = user_storage.load_users()
+    login_success = False
+
+    root = tk.Tk()
+    root.title("Welcome — Log In or Register")
+    root.geometry("400x200")
+    root.resizable(False, False)
+
+    ttk.Label(root, text="Username:").pack(pady=(20, 0))
+    uname = ttk.Entry(root)
+    uname.pack(fill="x", padx=20)
+
+    ttk.Label(root, text="Password:").pack(pady=(10, 0))
+    pwd = ttk.Entry(root, show="*")
+    pwd.pack(fill="x", padx=20)
+
+    def do_login():
+        nonlocal login_success
+        u = uname.get().strip(); p = pwd.get()
+        if u in users and users[u].authenticate(p):
+            login_success = True
+            root.destroy()
+        else:
+            messagebox.showerror("Login Failed", "Invalid credentials.")
+
+    def on_closing():
+        # Simply destroy the window; login_success stays False
+        root.destroy()
+
+    root.protocol("WM_DELETE_WINDOW", on_closing)
+
+    btn_frame = ttk.Frame(root)
+    btn_frame.pack(pady=15)
+    ttk.Button(btn_frame, text="Log In",    command=do_login).grid(row=0, column=0, padx=10)
+    ttk.Button(btn_frame, text="Register",  command=lambda: _open_register(root, users, user_storage)).grid(row=0, column=1, padx=10)
+
+    root.mainloop()
+    return login_success
+
+
+def _open_register(parent, users, user_storage):
+
+    reg_win = tk.Toplevel(parent)
+    reg_win.title("Register New Account")
+    reg_win.geometry("300x220")
+    reg_win.transient(parent)
+
+    ttk.Label(reg_win, text="New Username:").pack(pady=(15,0))
+    reg_uname = ttk.Entry(reg_win)
+    reg_uname.pack(fill="x", padx=20)
+
+    ttk.Label(reg_win, text="Password:").pack(pady=(10,0))
+    reg_pwd = ttk.Entry(reg_win, show="*")
+    reg_pwd.pack(fill="x", padx=20)
+
+    ttk.Label(reg_win, text="Confirm Password:").pack(pady=(10,0))
+    reg_pwd_confirm = ttk.Entry(reg_win, show="*")
+    reg_pwd_confirm.pack(fill="x", padx=20)
+
+    def save_registration():
+        new_u = reg_uname.get().strip()
+        new_p = reg_pwd.get()
+        new_pc = reg_pwd_confirm.get()
+        if not new_u or not new_p:
+            messagebox.showwarning("Input Error", "All fields are required.")
+            return
+        if new_p != new_pc:
+            messagebox.showwarning("Input Error", "Passwords must match.")
+            return
+        if new_u in users:
+            messagebox.showwarning("Input Error", "Username already exists.")
+            return
+
+        users[new_u] = User(new_u, hashlib.sha256(new_p.encode()).hexdigest())
+        user_storage.save_users(users)
+        messagebox.showinfo("Success", f"User '{new_u}' registered.")
+        reg_win.destroy()
+
+    ttk.Button(reg_win, text="Create Account", command=save_registration).pack(pady=15)
 
 
 class TaskQueue:
@@ -271,32 +439,10 @@ class TaskQueue:
         order = {"High": 0, "Medium": 1, "Low": 2}
         self._nodes.sort(
             key=lambda n: (
-                datetime.date.fromisoformat(n.creation_date),
+                datetime.date.fromisoformat(n.due_date),
                 order.get(n.priority, 1)
             )
         )
-
-
-class DataStorage:
-    """
-    Handles saving and loading Node lists to/from a JSON file.
-    """
-    def __init__(self, filepath: str = "tasks.json"):
-        self.filepath = filepath
-
-    def save_tasks(self, task_queue) -> None:
-        data = [node.to_dict() for node in task_queue.get_all_tasks()]
-        with open(self.filepath, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-
-    def load_tasks(self) -> list[Node]:
-        try:
-            with open(self.filepath, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            return [Node(**item) for item in data]
-        except (FileNotFoundError, json.JSONDecodeError):
-            return []
-
 
 class MainApp:
     """
@@ -305,7 +451,7 @@ class MainApp:
     def __init__(self, task_queue: TaskQueue, storage: DataStorage):
         self.scr_width, self.scr_height = 600, 400
         self.task_queue = task_queue
-        self.storage = storage
+        self.storage    = storage
 
         # Root window
         self.root = tk.Tk()
@@ -336,8 +482,8 @@ class MainApp:
         self.root.mainloop()
 
     def _setup_fonts(self):
-        self.dash_font = tkFont.Font(family="Segoe UI", size=15, weight="bold")
-        self.title_font = tkFont.Font(family="Segoe UI", size=20, weight="bold")
+        self.dash_font   = tkFont.Font(family="Segoe UI", size=15, weight="bold")
+        self.title_font  = tkFont.Font(family="Segoe UI", size=20, weight="bold")
         self.button_font = tkFont.Font(family="Segoe UI", size=12, slant="italic")
         self.result_font = tkFont.Font(family="Segoe UI", size=12)
         style = ttk.Style(self.root)
@@ -410,9 +556,21 @@ class MainApp:
 
 
 if __name__ == "__main__":
-    task_queue = TaskQueue()
-    storage = DataStorage("tasks.json")
+    # 1) Bootstrap users
+    user_store = UserStorage("users.json")
+    users = user_store.load_users()
+    if not users:
+        default = User("admin", hashlib.sha256("password".encode()).hexdigest())
+        user_store.save_users({"admin": default})
 
+    # 2) Prompt login/register
+    if not prompt_login_or_register(user_store):
+        # User closed or failed to log in
+        sys.exit(0)
+
+    # 3) Load tasks & start UI
+    task_queue = TaskQueue()
+    storage     = DataStorage("tasks.json")
     for node in storage.load_tasks():
         task_queue.add_task(node)
 
