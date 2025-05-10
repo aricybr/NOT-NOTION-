@@ -60,9 +60,18 @@
 - Sync codebase with the updated UML design.
 - Ensure each class in UML exists in code with accurate structure and relationships.
 
-**SPRINT 6 – Code Testing**
+**SPRINT 6 – User Testing**
+- Conduct user testing sessions
+- Collect feedback and report usability issues
+- Make final usability adjustments based on feedback
 
-- Test the code thoroughly to verify functionality and alignment with design documents.
+**SPRINT 7 – Final Integration Prep**
+
+- Implement code testing (Jawaria)
+- Finish coding (Mana)
+- Finalize design structure (Evan)
+- Complete user manual (Mana)
+- Finish documentation (Lateefat)
 
   # User Stories
 
