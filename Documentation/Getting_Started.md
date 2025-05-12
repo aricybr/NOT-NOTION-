@@ -6,7 +6,7 @@ NOT NOTION is a simple application built in Python with a Tkinter graphical inte
  **Requirements:** 
      <br>- Python 3.8 or higher
      <br>- tkinter
-**Steps:**
+<br>**Steps:**
 - Clone or download the project folder.
 - Navigate to the folder in your terminal.
 - Run the app with: python main.py
