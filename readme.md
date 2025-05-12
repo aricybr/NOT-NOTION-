@@ -19,10 +19,10 @@
 - [Standards and Practices](Documentation/Standards_and_Practices.md)
 - [Structure Not-Notion!](https://github.com/users/aricybr/projects/1?pane=issue&itemId=107869245&issue=aricybr%7CNOT-NOTION-%7C29)
 ### 🖌️ Design
--  [Problem Frame]()
--  [Level 0 Design Diagram](https://github.com/aricybr/NOT-NOTION-/blob/main/Design/not-notion_L0.jpg)
--  [Level 1 Design Diagram]()
--  [UML Diagram](https://github.com/aricybr/NOT-NOTION-/blob/main/Design/not-notion_uml.jpg)
+-  [Problem Frame](Design/Diagrams/problem_frame.jpg)
+-  [Level 0 Design Diagram](Design/Diagrams/not-notion_L0.jpg)
+-  [Level 1 Design Diagram](Design/Diagrams/not-notion_L1.jpg)
+-  [UML Diagram](Design/Diagrams/not-notion_uml.jpg)
 
 ### 💻Code 
 - [latest_main.py](https://github.com/aricybr/NOT-NOTION-/blob/main/Code/latest%20version/latest_main.py)
